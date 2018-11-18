@@ -1,0 +1,28 @@
+---
+
+- name: Install netdata
+  apt: name=netdata state=latest update_cache=true
+  register: netdata_installed
+
+- name: Netdata Config
+  when: netdata_installed is success
+  template: src=templates/{{ netdata_config_type }}/netdata.conf.j2 dest=/etc/netdata/netdata.conf mode=0755
+  register: netdata_config
+  notify:
+    - netdata_restart
+
+- name: Netdata Stream Config
+  when: netdata_installed is success
+  template: src=templates/{{ netdata_config_type }}/stream.conf.j2 dest=/etc/netdata/stream.conf mode=0755
+  register: netdata_stream_config
+  notify:
+    - netdata_restart
+
+- name: Start netdata
+  when:
+    - netdata_config is success
+    - netdata_stream_config is success
+  systemd:
+    name: netdata
+    state: started
+    enabled: yes

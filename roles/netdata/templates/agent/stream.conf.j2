@@ -1,0 +1,9 @@
+[stream]
+    # stream metrics to another netdata
+    enabled = yes
+
+    # the IP and PORT of the master
+    destination = {{ leader_host }}:{{ leader_port }}
+
+    # the API key to use
+    api key = {{ api_key }}
